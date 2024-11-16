@@ -9,7 +9,7 @@ const Sidebar: React.FC = () => {
             <div>
                 <Nav.Link href={ROUTES.HOME}>Home</Nav.Link>
                 <Nav.Link href={ROUTES.LECTURES}>Lectures</Nav.Link>
-                <Nav.Link href="">Students</Nav.Link>
+                <Nav.Link href={ROUTES.STUDENTS}>Students</Nav.Link>
                 <Nav.Link href="">Semesters</Nav.Link>
                 <Nav.Link href="">Courses</Nav.Link>
                 <Nav.Link href="">Classes</Nav.Link>

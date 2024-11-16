@@ -1,19 +1,19 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {Lecture} from "./model.ts";
+import {Student} from "./model.ts";
 import {API_HOST} from "../../configure.ts";
 
 
-interface LectureFormProps {
+interface StudentFormProps {
     isShown: boolean;
-    currentData: Lecture | undefined;
+    currentData: Student | undefined;
     closeModal: () => void;
     updated: () => void;
 }
 
-const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentData, updated}) => {
+const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentData, updated}) => {
 
-    const [staffId, setStaffId] = useState('');
+    const [studentId, setStudentId] = useState('');
     const [birthDay, setBirthDay] = useState('');
     const [email, setEmail] = useState('');
     const [firstName, setFirstName] = useState('');
@@ -29,7 +29,7 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
             if (currentData) {
                 const data = currentData;
                 setIsEdit(true);
-                setStaffId(data.staff_id || '');
+                setStudentId(data.student_id || '');
                 setBirthDay(data.date_of_birth || '');
                 setEmail(data.user.email || '');
                 setFirstName(data.user.first_name || '');
@@ -37,7 +37,7 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
                 setUserName(data.user.username || '');
             } else {
                 setIsEdit(false);
-                setStaffId('');
+                setStudentId('');
                 setBirthDay('');
                 setEmail('');
                 setFirstName('');
@@ -48,10 +48,10 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
     }, [isShown]);
 
     function postLecture(callback: () => void) {
-        fetch(`${API_HOST}/api/lectures/`, {
+        fetch(`${API_HOST}/api/students/`, {
             method: 'POST',
             body: JSON.stringify({
-                "staff_id": staffId,
+                "student_id": studentId,
                 "date_of_birth": birthDay,
                 "user": {
                     "username": userName,
@@ -77,10 +77,10 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/lectures/${currentData.id}/`, {
+        fetch(`${API_HOST}/api/students/${currentData.id}/`, {
             method: 'PATCH',
             body: JSON.stringify({
-                "staff_id": staffId,
+                "student_id": studentId,
                 "date_of_birth": birthDay,
                 "user": {
                     "email": email,
@@ -134,18 +134,18 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
                animation={true}
         >
             <Modal.Header>
-                <Modal.Title>{isEdit?"Edit ":"Add "}Lecture</Modal.Title>
+                <Modal.Title>{isEdit?"Edit ":"Add "}Student</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
                 <Form className="form" onSubmit={confirmTask}>
-                    <Form.Group controlId="staffid" className="mb-3">
-                        <Form.Label>Staff ID</Form.Label>
+                    <Form.Group controlId="studentid" className="mb-3">
+                        <Form.Label>Student ID</Form.Label>
                         <Form.Control
                             type="text"
-                            value={staffId}
-                            placeholder="Enter staff ID"
-                            onChange={(e) => setStaffId(e.target.value)}
+                            value={studentId}
+                            placeholder="Enter student ID"
+                            onChange={(e) => setStudentId(e.target.value)}
                             required={true}
                         />
                     </Form.Group>
@@ -214,4 +214,4 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
     )
 });
 
-export default LectureForm;
+export default StudentForm;
