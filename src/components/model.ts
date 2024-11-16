@@ -33,9 +33,18 @@ interface Course {
     name: string;
 }
 
+interface Semester {
+    id?: number;
+    year: string;
+    semester: string;
+    start_date: string;
+    end_date: string;
+}
+
 export type {
     ResponseData,
     Lecture,
     Student,
     Course,
+    Semester,
 }

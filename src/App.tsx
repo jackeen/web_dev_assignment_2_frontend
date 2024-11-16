@@ -9,6 +9,7 @@ import ROUTES from "./routes.ts";
 import Lectures from "./components/Lectures.tsx";
 import Students from "./components/Students.tsx";
 import Courses from "./components/Courses.tsx";
+import Semesters from "./components/Semesters.tsx";
 
 interface AppProps {
 }
@@ -22,6 +23,7 @@ const App: React.FC<AppProps> = (_) => {
                 <Route path={ROUTES.LECTURES} element={<Lectures/>} />
                 <Route path={ROUTES.STUDENTS} element={<Students/>} />
                 <Route path={ROUTES.COURSES} element={<Courses/>} />
+                <Route path={ROUTES.SEMESTERS} element={<Semesters/>} />
             </Routes>
         </BrowserRouter>
     )
