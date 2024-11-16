@@ -27,8 +27,15 @@ interface Student {
     user: User
 }
 
+interface Course {
+    id?: number;
+    code: string;
+    name: string;
+}
+
 export type {
     ResponseData,
     Lecture,
     Student,
+    Course,
 }

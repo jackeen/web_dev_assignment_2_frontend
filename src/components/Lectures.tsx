@@ -65,12 +65,10 @@ const Lectures: React.FC = () => {
                 }
             }).then((res) => {
                 setLoading(false);
-                return res.json();
-            }).then((json) => {
-                if (json.success) {
+                if (res.status === 204) {
                     listUpdated()
                 } else {
-
+                    alert(res.statusText)
                 }
             });
         }

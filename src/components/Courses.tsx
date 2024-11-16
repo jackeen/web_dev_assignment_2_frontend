@@ -2,24 +2,24 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Table} from "react-bootstrap";
 
-import {Student} from "./model.ts";
-import StudentForm from "./StudentForm.tsx";
+import {Course} from "./model.ts";
+import CourseForm from "./CourseForm.tsx";
 import {API_HOST} from "../../configure.ts";
 
 
-const Students: React.FC = () => {
+const Courses: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
 
-    const [studentList, setStudentList] = useState<Student[]>([]);
+    const [courseList, setStudentList] = useState<Course[]>([]);
     const [loading, setLoading] = useState(false);
 
     // for edit form, which cannot use the common variable, must state
-    const [currentData, setCurrentData] = useState<Student|undefined>(undefined);
+    const [currentData, setCurrentData] = useState<Course|undefined>(undefined);
     const [listChanging, setListChanging] = useState(0);
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/students/`, {
+        fetch(`${API_HOST}/api/courses/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ const Students: React.FC = () => {
             return res.json();
         }).then((json) => {
             if (json.success) {
-                let data = json.data as Student[];
+                let data = json.data as Course[];
                 setStudentList(data);
             } else {
 
@@ -39,7 +39,7 @@ const Students: React.FC = () => {
 
     function startEditForm(id?: number) {
         if (id !== undefined) {
-            setCurrentData(studentList.find((student) => student.id === id));
+            setCurrentData(courseList.find((course) => course.id === id));
             setShowForm(true);
         }
     }
@@ -49,16 +49,16 @@ const Students: React.FC = () => {
     }
 
     function listUpdated() {
-        setListChanging(Math.random());
+        setListChanging(Math.floor(Math.random() * 100));
     }
 
-    function deleteStudent(id?: number) {
+    function deleteCourse(id?: number) {
         if (id !== undefined) {
-            if (!confirm("Are you sure you want to delete this student?")) {
+            if (!confirm("Are you sure you want to delete this course?")) {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/students/${id}/`, {
+            fetch(`${API_HOST}/api/courses/${id}/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,18 +76,18 @@ const Students: React.FC = () => {
 
     return (
         <DashBoardLayout>
-            <StudentForm
+            <CourseForm
                 isShown={showForm}
                 currentData={currentData}
                 closeModal={()=>{setShowForm(false)}}
                 updated={listUpdated}
             />
             <Card>
-                <Card.Header>Students</Card.Header>
+                <Card.Header>Courses</Card.Header>
                 <Card.Body>
                     {/*<Card.Title></Card.Title>*/}
                     <Card.Text>
-                        <Button onClick={startNewForm}>New Student</Button>
+                        <Button onClick={startNewForm}>New Course</Button>
                     </Card.Text>
 
                     {loading ? <Card.Text>Loading</Card.Text> : ''}
@@ -95,25 +95,21 @@ const Students: React.FC = () => {
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Staff ID</th>
+                            <th>Code</th>
                             <th>Name</th>
-                            <th>Date of birth</th>
-                            <th>Email</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        {studentList.map((student: Student, index: number) => {
+                        {courseList.map((course: Course, _: number) => {
                             return (
-                                <tr key={index}>
-                                    <td>{student.id}</td>
-                                    <td>{student.student_id}</td>
-                                    <td>{student.user.first_name} {student.user.last_name}</td>
-                                    <td>{student.date_of_birth}</td>
-                                    <td>{student.user.email}</td>
+                                <tr key={course.id}>
+                                    <td>{course.id}</td>
+                                    <td>{course.code}</td>
+                                    <td>{course.name}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button onClick={() => {startEditForm(student.id)}}>Edit</Button>
-                                        <Button onClick={() => {deleteStudent(student.id)}} variant={"danger"}>Delete</Button>
+                                        <Button onClick={() => {startEditForm(course.id)}}>Edit</Button>
+                                        <Button onClick={() => {deleteCourse(course.id)}} variant={"danger"}>Delete</Button>
                                     </td>
                                 </tr>
                             )
@@ -127,4 +123,4 @@ const Students: React.FC = () => {
     )
 }
 
-export default Students;
+export default Courses;

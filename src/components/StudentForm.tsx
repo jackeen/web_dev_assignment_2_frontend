@@ -47,7 +47,7 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
         }
     }, [isShown]);
 
-    function postLecture(callback: () => void) {
+    function postStudent(callback: () => void) {
         fetch(`${API_HOST}/api/students/`, {
             method: 'POST',
             body: JSON.stringify({
@@ -73,7 +73,7 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
             }
         });
     }
-    function updateLecture(callback: () => void) {
+    function updateStudent(callback: () => void) {
         if (!currentData) {
             return;
         }
@@ -107,14 +107,14 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
         const form = e.target as HTMLFormElement;
         setIsLoading(true);
         if (isEdit) {
-            updateLecture(() => {
+            updateStudent(() => {
                 setIsLoading(false);
                 form.reset();
                 updated();
                 closeModal();
             });
         } else {
-            postLecture(() => {
+            postStudent(() => {
                 setIsLoading(false);
                 form.reset();
                 updated();
