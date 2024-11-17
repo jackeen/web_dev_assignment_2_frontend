@@ -12,7 +12,7 @@ const Sidebar: React.FC = () => {
                 <Nav.Link href={ROUTES.STUDENTS}>Students</Nav.Link>
                 <Nav.Link href={ROUTES.SEMESTERS}>Semesters</Nav.Link>
                 <Nav.Link href={ROUTES.COURSES}>Courses</Nav.Link>
-                <Nav.Link href="">Classes</Nav.Link>
+                <Nav.Link href={ROUTES.CLASSES}>Classes</Nav.Link>
             </div>
         </Nav>
     )

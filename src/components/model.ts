@@ -41,10 +41,20 @@ interface Semester {
     end_date: string;
 }
 
+interface Class {
+    id?: number;
+    number: string;
+    course: Course;
+    semester: Semester;
+    lecture: Lecture | null;
+    students: Student[];
+}
+
 export type {
     ResponseData,
     Lecture,
     Student,
     Course,
     Semester,
+    Class,
 }
