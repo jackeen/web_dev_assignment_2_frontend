@@ -23,6 +23,7 @@ const Semesters: React.FC = () => {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             setLoading(false);
@@ -62,6 +63,7 @@ const Semesters: React.FC = () => {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Token ${localStorage.getItem('token')}`,
                 }
             }).then((res) => {
                 setLoading(false);

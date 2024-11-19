@@ -44,6 +44,7 @@ const CourseForm: React.FC<CourseFormProps> = (({isShown,closeModal, currentData
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();
@@ -67,6 +68,7 @@ const CourseForm: React.FC<CourseFormProps> = (({isShown,closeModal, currentData
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();

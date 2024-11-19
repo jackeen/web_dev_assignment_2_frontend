@@ -62,6 +62,7 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();
@@ -90,6 +91,7 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();

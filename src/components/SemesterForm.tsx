@@ -52,6 +52,7 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();
@@ -77,6 +78,7 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
             }),
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
             return res.json();
