@@ -1,7 +1,9 @@
+import Roles from "./Roles.ts";
+
 // For API Data
-interface ResponseData<E, D> {
+interface ResponseData<D> {
     success: boolean;
-    error: E;
+    error: string[];
     data: D;
 }
 
@@ -11,6 +13,10 @@ interface User {
     email: string;
     first_name: string;
     last_name: string;
+    is_superuser: boolean;
+    is_staff: boolean;
+    is_active: boolean;
+    group: string;
 }
 
 interface Lecture {
@@ -51,7 +57,9 @@ interface Class {
 }
 
 export type {
+    Roles,
     ResponseData,
+    User,
     Lecture,
     Student,
     Course,

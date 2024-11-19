@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {Student} from "./model.ts";
+import {Student} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
 
 

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Table} from "react-bootstrap";
 
-import {Course} from "./model.ts";
+import {Course} from "../model.ts";
 import CourseForm from "./CourseForm.tsx";
 import {API_HOST} from "../../configure.ts";
 

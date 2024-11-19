@@ -2,11 +2,12 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Table} from "react-bootstrap";
 
-import {Class} from "./model.ts";
+import {Class, ResponseData} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
 import ClassForm from "./ClassForm.tsx";
 import ClassLectureForm from "./ClassLectureForm.tsx";
 import ClassStudentsForm from "./ClassStudentsForm.tsx";
+import axios from "axios";
 
 
 const Classes: React.FC = () => {
@@ -24,21 +25,19 @@ const Classes: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/classes/`, {
-            method: 'GET',
+        axios.get(`${API_HOST}/api/classes/`, {
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Token ${localStorage.getItem('token')}`,
             }
         }).then((res) => {
-            setLoading(false);
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Class[];
-                setClassList(data);
-            } else {
-
+            const studentsRes = res.data as ResponseData<Class[]>;
+            if (studentsRes.success) {
+                setClassList(studentsRes.data);
             }
+            setLoading(false);
+        }).catch((err) => {
+            alert(err.toString());
         });
     }, [listChanging]);
 

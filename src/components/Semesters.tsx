@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Table} from "react-bootstrap";
 
-import {Semester} from "./model.ts";
+import {Semester} from "../model.ts";
 import SemesterForm from "./SemesterForm.tsx";
 import {API_HOST} from "../../configure.ts";
 

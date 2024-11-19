@@ -1,7 +1,8 @@
 const ROUTES = {
     'HOME': '/',
     'LOGIN': '/login',
-    'NOTFOUND': '/notfound',
+    'NOT_FOUND': '/not_found',
+    'NOT_AUTHORIZED': '/not_authorized',
     'LECTURES': '/lectures',
     'STUDENTS':'/students',
     'SEMESTERS':'/semesters',

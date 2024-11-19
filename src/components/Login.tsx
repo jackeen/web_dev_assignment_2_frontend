@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import {Alert, Button, Card, Form} from "react-bootstrap";
 import {API_HOST} from "../../configure.ts";
-import {ResponseData} from "./model.ts";
+import {ResponseData, User} from "../model.ts";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
+import Roles from "../Roles.ts";
+import ROUTES from "../routes.ts";
 
-interface LoginError {
-    non_field_errors: [String]
-}
+
 interface TokenData {
     token: string;
 }
-
 
 const Login: React.FC = () => {
 
@@ -23,6 +23,7 @@ const Login: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+
         const response = await fetch(`${API_HOST}/api/login/`, {
             method: 'POST',
             body: JSON.stringify({username, password}),
@@ -31,14 +32,38 @@ const Login: React.FC = () => {
             }
         });
 
-
-        const data: ResponseData<LoginError, TokenData> = await response.json();
+        const data: ResponseData<TokenData> = await response.json();
         if (data.success) {
+            const token = data.data.token;
             localStorage.setItem('token', data.data.token);
-            navigate('/');
+
+            axios.get(`${API_HOST}/api/current_user/`, {
+                headers: {
+                    "Authorization": `Token ${token}`,
+                }
+            }).then((res) => {
+                const user = res.data.data as User;
+                let role = "";
+
+                if (user.is_superuser) {
+                    role = Roles.Admin.toString();
+                } else {
+                    if (user.group === Roles.Lecture.toString()) {
+                        role = Roles.Lecture;
+                    } else {
+                        role = Roles.Student;
+                    }
+                }
+                localStorage.setItem('role', role);
+                localStorage.setItem('user', JSON.stringify(user));
+                navigate(ROUTES.HOME);
+            }).catch((err) => {
+                alert(err.toString());
+            })
+
         } else {
-            if (data.error.non_field_errors.length > 0) {
-                let error_text = data.error.non_field_errors[0];
+            if (data.error.length > 0) {
+                let error_text = data.error.join('\n');
                 // @ts-ignore
                 setError(error_text);
             }
