@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {Alert, Button, Card, Form} from "react-bootstrap";
 import {API_HOST} from "../../configure.ts";
 import {ResponseData, User} from "../model.ts";
-import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import Roles from "../Roles.ts";
 import ROUTES from "../routes.ts";
@@ -18,7 +17,6 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -51,7 +49,9 @@ const Login: React.FC = () => {
                 }
                 localStorage.setItem('role', role);
                 localStorage.setItem('user', JSON.stringify(user));
-                navigate(ROUTES.HOME);
+                setTimeout(() => {
+                    window.location.href = `${ROUTES.HOME}`;
+                }, 300);
             }).catch((err) => {
                 alert(err.toString());
             })

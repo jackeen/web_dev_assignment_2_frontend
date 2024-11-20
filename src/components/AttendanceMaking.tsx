@@ -8,6 +8,7 @@ interface AttendanceMakingProp {
     classId: number;
     studentId: number;
     lectureId: number;
+    semesterId: number;
     status: string;
     isShown: boolean;
     updated: () => void;
@@ -22,14 +23,14 @@ const AttendanceMaking: React.FC<AttendanceMakingProp> = (props) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        dataLoader.get('/api/college_days/')
+        dataLoader.get(`/api/college_days/?semester_id=${props.semesterId}`)
             .then((data) => {
                 const res = data.data as ResponseData<CollegeDay[]>;
                 if (res.success) {
                     setCollegeDayList(res.data);
                 }
             });
-    }, []);
+    }, [props.isShown]);
 
     function confirmTask() {
         if (collegeDayId === 0) {

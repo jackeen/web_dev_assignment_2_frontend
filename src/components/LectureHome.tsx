@@ -14,12 +14,13 @@ interface attendanceMapValue {
 const LectureHome: React.FC = () => {
 
     const [classList, setClassList] = useState<Class[]>([]);
-    const [attendanceData, setAttendanceData] = useState<Map<number, attendanceMapValue>>(new Map());
+    const [attendanceData, setAttendanceData] = useState<Map<string, attendanceMapValue>>(new Map());
 
     const [status, setStatus] = useState('');
     const [classId, setClassId] = useState(0);
     const [studentId, setStudentId] = useState(0);
     const [lectureId, setLectureId] = useState(0);
+    const [semesterId, setSemesterId] = useState(0);
 
     const [isShown, setIsShown] = useState(false);
     // const [isLoading, setIsLoading] = useState(false);
@@ -39,27 +40,30 @@ const LectureHome: React.FC = () => {
                         setClassId(classId || 0);
                         setLectureId(lectureId || 0);
 
-                        // continue attendance for the list ????
+                        // continue attendance for the list
                         dataLoader.get(`/api/attendances/?lecture_id=${lectureId}`)
                             .then((data) => {
                                 const AttendanceRes = data.data as ResponseData<Attendance[]>;
-                                const attendanceMap: Map<number, attendanceMapValue> = new Map();
+                                const attendanceMap: Map<string, attendanceMapValue> = new Map();
+
+                                // rebuild attendance data for every student for next list to display
                                 if (AttendanceRes.success) {
                                     AttendanceRes.data.forEach((attendance) => {
-                                        let stdAtt = attendanceMap.get(attendance.student_id)
+                                        const attKey = `${attendance.student_id}_${attendance.class_id}`;
+                                        let stdAtt = attendanceMap.get(attKey)
                                         if (stdAtt) {
                                             if (attendance.status === 'A') {
                                                 stdAtt.A++;
                                             } else if (attendance.status === 'P') {
                                                 stdAtt.P++;
                                             }
-                                            attendanceMap.set(attendance.student_id, stdAtt);
+                                            attendanceMap.set(attKey, stdAtt);
                                         } else {
                                             const newAtt: attendanceMapValue = {
                                                 A: (attendance.status === 'A' ? 1 : 0),
                                                 P: (attendance.status === 'P' ? 1 : 0),
                                             }
-                                            attendanceMap.set(attendance.student_id, newAtt);
+                                            attendanceMap.set(attKey, newAtt);
                                         }
                                     });
                                     setAttendanceData(attendanceMap);
@@ -73,10 +77,12 @@ const LectureHome: React.FC = () => {
             });
     }, [listChanging]);
 
-    function attendanceMaking(status: string, studentId: number|undefined) {
-        if (classId !== undefined && studentId !== undefined && lectureId !== undefined) {
+    function attendanceMaking(status: string, studentId: number|undefined, semesterId: number|undefined, classId: number|undefined) {
+        if (classId !== undefined && studentId !== undefined && lectureId !== undefined && semesterId !== undefined) {
             setStatus(status);
             setStudentId(studentId);
+            setSemesterId(semesterId);
+            setClassId(classId);
             setIsShown(true);
         }
     }
@@ -87,6 +93,18 @@ const LectureHome: React.FC = () => {
         setListChanging(Math.random());
     }
 
+    function getAttendanceNumber(studentId: number|undefined, classId: number|undefined, s: string): string {
+        const d = attendanceData.get(`${studentId}_${classId}`)
+        if (d !== undefined) {
+            if (s === 'A') {
+                return d.A.toString();
+            } else if (s === 'P') {
+                return d.P.toString();
+            }
+        }
+        return "--"
+    }
+
     return (
         <div>
             <AttendanceMaking
@@ -94,24 +112,27 @@ const LectureHome: React.FC = () => {
                 lectureId={lectureId}
                 classId={classId}
                 studentId={studentId}
+                semesterId={semesterId}
                 isShown={isShown}
                 closeModal={closeModal}
                 updated={listUpdated}
             />
+            <h3 className="pt-3">Lectures' classes</h3>
             {classList.length == 0 ? <p>This is no class.</p> : ''}
-            {classList.map((cls) => {
+            {classList.map((cls, index) => {
                 return (
-                    <Card key={cls.id}>
-                        <Card.Header><b>Class number: {cls.number}</b></Card.Header>
-                        <Card.Body>
-                            <Card.Text className="d-flex align-items-center gap-2">
-                                <span>{cls.course.code} {cls.course.name}</span>
-                                <span>IN</span>
-                                <span>{cls.semester.year} {cls.semester.semester}</span>
-                            </Card.Text>
+                    <div key={cls.id}>
+                        <Card key={cls.id} className="mb-3">
+                            <Card.Header><b>{index + 1}: Class-{cls.number}</b></Card.Header>
+                            <Card.Body>
+                                <Card.Text className="d-flex align-items-center gap-2">
+                                    <span>{cls.course.code} {cls.course.name}</span>
+                                    <span>IN</span>
+                                    <span>{cls.semester.year} {cls.semester.semester}</span>
+                                </Card.Text>
 
-                            <Table bordered hover>
-                                <thead>
+                                <Table bordered hover>
+                                    <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Student ID</th>
@@ -121,8 +142,8 @@ const LectureHome: React.FC = () => {
                                         <th>Present</th>
                                         <th></th>
                                     </tr>
-                                </thead>
-                                <tbody>
+                                    </thead>
+                                    <tbody>
                                     {cls.students.map((student: Student) => {
                                         return (
                                             <tr key={student.id}>
@@ -132,26 +153,27 @@ const LectureHome: React.FC = () => {
                                                 <td>
                                                     <Link to={`mailto:${student.user.email}`}>{student.user.email}</Link>
                                                 </td>
-                                                <td>{attendanceData.get(student.id || 0)?.A}</td>
-                                                <td>{attendanceData.get(student.id || 0)?.P}</td>
+                                                <td>{getAttendanceNumber(student.id, cls.id, 'A')}</td>
+                                                <td>{getAttendanceNumber(student.id, cls.id, 'P')}</td>
                                                 <td className="d-flex gap-2 justify-content-end">
                                                     <Button variant="warning" size={'sm'} onClick={() => {
-                                                        attendanceMaking('A', student.id,);
+                                                        attendanceMaking('A', student.id, cls.semester.id, cls.id);
                                                     }}>Absent</Button>
                                                     <Button variant="success" size={'sm'} onClick={() => {
-                                                        attendanceMaking('P', student.id);
+                                                        attendanceMaking('P', student.id, cls.semester.id, cls.id);
                                                     }}>Present</Button>
                                                 </td>
                                             </tr>
                                         )
                                     })}
-                                </tbody>
-                            </Table>
-                        </Card.Body>
-                        {/*<Card.Footer>*/}
-                        {/*    <Button>Load attendance list</Button>*/}
-                        {/*</Card.Footer>*/}
-                    </Card>
+                                    </tbody>
+                                </Table>
+                            </Card.Body>
+                            {/*<Card.Footer>*/}
+                            {/*    <Button>Load attendance list</Button>*/}
+                            {/*</Card.Footer>*/}
+                        </Card>
+                    </div>
                 )
             })}
         </div>

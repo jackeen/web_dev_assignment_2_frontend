@@ -128,7 +128,7 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
                                         />
                                     </Col>
                                     <Col>
-                                        <Form.Label htmlFor={`std_${index}`}>{student.user.first_name}</Form.Label>
+                                        <Form.Label htmlFor={`std_${index}`}>Student ID: {student.student_id}, Student Name: {student.user.first_name} {student.user.last_name}</Form.Label>
                                     </Col>
                                 </Row>
                             )

@@ -16,9 +16,8 @@ const Toolbar: React.FC = () => {
 
     return (
         <Navbar expand="lg" className="shadow-sm mb-3">
-            <Container fluid>
-                <Navbar.Brand href="#">Attendance Dashboard System</Navbar.Brand>
-                <Navbar.Text></Navbar.Text>
+            <Container fluid className="d-flex">
+                <Navbar.Brand href={ROUTES.HOME}>Attendance System</Navbar.Brand>
                 <Button variant={'outline-primary'} size={'sm'} onClick={logoutFun}>Logout</Button>
             </Container>
         </Navbar>
