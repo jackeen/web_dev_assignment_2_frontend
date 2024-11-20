@@ -1,6 +1,9 @@
 import React from 'react';
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Container, ListGroup} from "react-bootstrap";
+import Roles from "../Roles.ts";
+import LectureHome from "./LectureHome.tsx";
+import StudentHome from "./StudentHome.tsx";
 
 
 const HomeMain: React.FC = () => {
@@ -19,9 +22,21 @@ const HomeMain: React.FC = () => {
 }
 
 const Home: React.FC = () => {
+    let role = localStorage.getItem("role");
+    let mainContent = <HomeMain/>
+
+    switch (role) {
+        case Roles.Lecture:
+            mainContent = <LectureHome/>
+            break;
+        case Roles.Student:
+            mainContent = <StudentHome/>
+            break
+    }
+
     return (
         <DashBoardLayout>
-            <HomeMain />
+            {mainContent}
         </DashBoardLayout>
     )
 }

@@ -1,6 +1,6 @@
 enum Roles {
     Admin = 'admin',
-    Lecture = 'lectures',
+    Lecture = 'lecture',
     Student = 'student',
     Guest = 'guest',
 }

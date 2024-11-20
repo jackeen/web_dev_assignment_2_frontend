@@ -56,6 +56,20 @@ interface Class {
     students: Student[];
 }
 
+interface Attendance {
+    id?: number;
+    class_id: number;
+    student_id: number;
+    lecture_id: number;
+    status: string;
+}
+
+interface CollegeDay {
+    id?: number;
+    semester_id: number;
+    date: string;
+}
+
 export type {
     Roles,
     ResponseData,
@@ -65,4 +79,6 @@ export type {
     Course,
     Semester,
     Class,
+    Attendance,
+    CollegeDay,
 }

@@ -44,15 +44,10 @@ const Login: React.FC = () => {
             }).then((res) => {
                 const user = res.data.data as User;
                 let role = "";
-
                 if (user.is_superuser) {
                     role = Roles.Admin.toString();
                 } else {
-                    if (user.group === Roles.Lecture.toString()) {
-                        role = Roles.Lecture;
-                    } else {
-                        role = Roles.Student;
-                    }
+                    role = user.group;
                 }
                 localStorage.setItem('role', role);
                 localStorage.setItem('user', JSON.stringify(user));
