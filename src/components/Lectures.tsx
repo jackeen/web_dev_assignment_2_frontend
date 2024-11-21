@@ -96,6 +96,7 @@ const Lectures: React.FC = () => {
                         <tr>
                             <th>#</th>
                             <th>Staff ID</th>
+                            <th>User Name</th>
                             <th>Name</th>
                             <th>Date of birth</th>
                             <th>Email</th>
@@ -108,6 +109,7 @@ const Lectures: React.FC = () => {
                                 <tr key={index}>
                                     <td>{lecture.id}</td>
                                     <td>{lecture.staff_id}</td>
+                                    <td>{lecture.user.username}</td>
                                     <td>{lecture.user.first_name} {lecture.user.last_name}</td>
                                     <td>{lecture.date_of_birth}</td>
                                     <td>{lecture.user.email}</td>
@@ -121,7 +123,7 @@ const Lectures: React.FC = () => {
                         </tbody>
                         <tfoot hidden={!loading}>
                             <tr>
-                                <td colSpan={6} className="text-center">
+                                <td colSpan={7} className="text-center">
                                     <Spinner
                                         as="span"
                                         animation="border"
