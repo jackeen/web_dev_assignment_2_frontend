@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Course} from "../model.ts";
 import CourseForm from "./CourseForm.tsx";
@@ -91,9 +91,7 @@ const Courses: React.FC = () => {
                     <Card.Text>
                         <Button onClick={startNewForm}>New Course</Button>
                     </Card.Text>
-
-                    {loading ? <Card.Text>Loading</Card.Text> : ''}
-                    <Table striped bordered hover>
+                    <Table responsive bordered hover>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -110,16 +108,32 @@ const Courses: React.FC = () => {
                                     <td>{course.code}</td>
                                     <td>{course.name}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button onClick={() => {startEditForm(course.id)}}>Edit</Button>
-                                        <Button onClick={() => {deleteCourse(course.id)}} variant={"danger"}>Delete</Button>
+                                        <Button size="sm" onClick={() => {
+                                            startEditForm(course.id)
+                                        }}>Edit</Button>
+                                        <Button size="sm" onClick={() => {
+                                            deleteCourse(course.id)
+                                        }} variant={"danger"}>Delete</Button>
                                     </td>
                                 </tr>
                             )
                         })}
                         </tbody>
+                        <tfoot hidden={!loading}>
+                        <tr>
+                            <td colSpan={4} className="text-center">
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            </td>
+                        </tr>
+                        </tfoot>
                     </Table>
                 </Card.Body>
-                {/*<Card.Footer></Card.Footer>*/}
             </Card>
         </DashBoardLayout>
     )

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Alert, Button, Card, Form} from "react-bootstrap";
+import {Alert, Button, Card, Form, Spinner} from "react-bootstrap";
 import {API_HOST} from "../../configure.ts";
 import {ResponseData, User} from "../model.ts";
 import axios from "axios";
@@ -51,7 +51,7 @@ const Login: React.FC = () => {
                 localStorage.setItem('user', JSON.stringify(user));
                 setTimeout(() => {
                     window.location.href = `${ROUTES.HOME}`;
-                }, 300);
+                }, 200);
             }).catch((err) => {
                 alert(err.toString());
             })
@@ -93,7 +93,22 @@ const Login: React.FC = () => {
                             required={true}
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit" disabled={loading}>Login</Button>
+                    <div className="d-flex justify-content-center">
+                        <Button variant="primary" type="submit"
+                                className="w-100 d-flex gap-2 align-items-center justify-content-center"
+                                disabled={loading}
+                        >
+                            <Spinner
+                                hidden={!loading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <span>Login</span>
+                        </Button>
+                    </div>
                 </Form>
             </Card>
         </div>

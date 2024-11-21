@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Semester} from "../model.ts";
 import SemesterForm from "./SemesterForm.tsx";
@@ -91,9 +91,7 @@ const Semesters: React.FC = () => {
                     <Card.Text>
                         <Button onClick={startNewForm}>New Semester</Button>
                     </Card.Text>
-
-                    {loading ? <Card.Text>Loading</Card.Text> : ''}
-                    <Table striped bordered hover>
+                    <Table responsive bordered hover>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -114,10 +112,10 @@ const Semesters: React.FC = () => {
                                     <td>{semester.start_date}</td>
                                     <td>{semester.end_date}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button onClick={() => {
+                                        <Button size="sm" onClick={() => {
                                             startEditForm(semester.id)
                                         }}>Edit</Button>
-                                        <Button onClick={() => {
+                                        <Button size="sm" onClick={() => {
                                             deleteSemester(semester.id)
                                         }} variant={"danger"}>Delete</Button>
                                     </td>
@@ -125,6 +123,19 @@ const Semesters: React.FC = () => {
                             )
                         })}
                         </tbody>
+                        <tfoot hidden={!loading}>
+                        <tr>
+                            <td colSpan={6} className="text-center">
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            </td>
+                        </tr>
+                        </tfoot>
                     </Table>
                 </Card.Body>
                 {/*<Card.Footer></Card.Footer>*/}

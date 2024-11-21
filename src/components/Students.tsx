@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Student} from "../model.ts";
 import StudentForm from "./StudentForm.tsx";
@@ -91,9 +91,7 @@ const Students: React.FC = () => {
                     <Card.Text>
                         <Button onClick={startNewForm}>New Student</Button>
                     </Card.Text>
-
-                    {loading ? <Card.Text>Loading</Card.Text> : ''}
-                    <Table striped bordered hover>
+                    <Table bordered hover responsive>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -114,13 +112,30 @@ const Students: React.FC = () => {
                                     <td>{student.date_of_birth}</td>
                                     <td>{student.user.email}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button onClick={() => {startEditForm(student.id)}}>Edit</Button>
-                                        <Button onClick={() => {deleteStudent(student.id)}} variant={"danger"}>Delete</Button>
+                                        <Button size="sm" onClick={() => {
+                                            startEditForm(student.id)
+                                        }}>Edit</Button>
+                                        <Button size="sm" onClick={() => {
+                                            deleteStudent(student.id)
+                                        }} variant={"danger"}>Delete</Button>
                                     </td>
                                 </tr>
                             )
                         })}
                         </tbody>
+                        <tfoot hidden={!loading}>
+                        <tr>
+                            <td colSpan={6} className="text-center">
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            </td>
+                        </tr>
+                        </tfoot>
                     </Table>
                 </Card.Body>
                 {/*<Card.Footer></Card.Footer>*/}

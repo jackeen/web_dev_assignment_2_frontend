@@ -1,6 +1,6 @@
 import React from 'react';
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Container, ListGroup} from "react-bootstrap";
+import {ListGroup} from "react-bootstrap";
 import Roles from "../Roles.ts";
 import LectureHome from "./LectureHome.tsx";
 import StudentHome from "./StudentHome.tsx";
@@ -8,7 +8,8 @@ import StudentHome from "./StudentHome.tsx";
 
 const HomeMain: React.FC = () => {
     return (
-        <Container>
+        <div>
+            <h3>Manager instructions</h3>
             <ListGroup as='ol' numbered={true}>
                 <ListGroup.Item>Create students</ListGroup.Item>
                 <ListGroup.Item>Create lectures</ListGroup.Item>
@@ -17,7 +18,7 @@ const HomeMain: React.FC = () => {
                 <ListGroup.Item>Create classes</ListGroup.Item>
                 <ListGroup.Item>Assign lecture and students for classes</ListGroup.Item>
             </ListGroup>
-        </Container>
+        </div>
     )
 }
 

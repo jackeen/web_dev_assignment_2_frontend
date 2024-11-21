@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Lecture} from "../model.ts";
 import LectureForm from "./LectureForm.tsx";
@@ -91,9 +91,7 @@ const Lectures: React.FC = () => {
                     <Card.Text>
                         <Button onClick={startNewForm}>New Lecture</Button>
                     </Card.Text>
-
-                    {loading ? <Card.Text>Loading</Card.Text> : ''}
-                    <Table striped bordered hover>
+                    <Table bordered hover responsive>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -121,6 +119,19 @@ const Lectures: React.FC = () => {
                             )
                         })}
                         </tbody>
+                        <tfoot hidden={!loading}>
+                            <tr>
+                                <td colSpan={6} className="text-center">
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                    />
+                                </td>
+                            </tr>
+                        </tfoot>
                     </Table>
                 </Card.Body>
                 {/*<Card.Footer></Card.Footer>*/}

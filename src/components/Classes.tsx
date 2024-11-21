@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Class, ResponseData} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
@@ -121,9 +121,7 @@ const Classes: React.FC = () => {
                     <Card.Text>
                         <Button onClick={startNewForm}>New Class</Button>
                     </Card.Text>
-
-                    {loading ? <Card.Text>Loading</Card.Text> : ''}
-                    <Table striped bordered hover>
+                    <Table responsive bordered hover>
                         <thead>
                         <tr>
                             <th>#</th>
@@ -147,14 +145,14 @@ const Classes: React.FC = () => {
                                         class_instance.lecture ?
                                             class_instance.lecture.user.first_name + " " + class_instance.lecture.user.last_name
                                             : "Not occupied"
-                                        }
+                                    }
                                     </td>
                                     <td>{class_instance.students.length}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button variant={'secondary'} size={"sm"} onClick={() => {
+                                        <Button size={"sm"} onClick={() => {
                                             startLectureForm(class_instance.id);
                                         }}>Assign Lecture</Button>
-                                        <Button variant={'secondary'} size={"sm"} onClick={() => {
+                                        <Button size={"sm"} onClick={() => {
                                             startStudentsForm(class_instance.id)
                                         }}>Assign Students</Button>
 
@@ -169,6 +167,19 @@ const Classes: React.FC = () => {
                             )
                         })}
                         </tbody>
+                        <tfoot hidden={!loading}>
+                        <tr>
+                            <td colSpan={7} className="text-center">
+                                <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    role="status"
+                                    aria-hidden="true"
+                                />
+                            </td>
+                        </tr>
+                        </tfoot>
                     </Table>
                 </Card.Body>
                 {/*<Card.Footer></Card.Footer>*/}
