@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Form, Modal, Spinner} from "react-bootstrap";
 import {Semester} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
 
@@ -170,8 +170,23 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
                     </Form.Group>
 
                     <div className="d-flex justify-content-end gap-2">
-                        <Button disabled={isLoading} type={"submit"} variant="primary">Save</Button>
-                        <Button onClick={cancelTask} variant="secondary">Cancel</Button>
+                        <Button
+                            disabled={isLoading}
+                            type={"submit"}
+                            variant="primary"
+                            className="d-flex gap-2 align-items-center justify-content-center"
+                        >
+                            <Spinner
+                                hidden={!isLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <span>Save</span>
+                        </Button>
+                        <Button disabled={isLoading} onClick={cancelTask} variant="secondary">Cancel</Button>
                     </div>
 
                 </Form>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Button, Form, Modal} from "react-bootstrap";
+import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
 import {Class, Course, Semester} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
 
@@ -222,8 +222,23 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
 
 
                     <div className="d-flex justify-content-end gap-2">
-                        <Button disabled={isLoading} type={"submit"} variant="primary">Save</Button>
-                        <Button onClick={cancelTask} variant="secondary">Cancel</Button>
+                        <Button
+                            disabled={isLoading}
+                            type={"submit"}
+                            variant="primary"
+                            className="d-flex gap-2 align-items-center justify-content-center"
+                        >
+                            <Spinner
+                                hidden={!isLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <span>Save</span>
+                        </Button>
+                        <Button disabled={isLoading} onClick={cancelTask} variant="secondary">Cancel</Button>
                     </div>
 
                 </Form>

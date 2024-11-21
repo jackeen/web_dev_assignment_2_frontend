@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Attendance, Class, ResponseData, User} from "../model.ts";
 import dataLoader from "../dataLoader.ts";
-import {Table} from "react-bootstrap";
+import {Spinner, Table} from "react-bootstrap";
 
 
 interface attendanceMapValue {
@@ -66,8 +66,18 @@ const StudentHome: React.FC = () => {
 
     return (
         <div>
-            <h2 className="pt-3">Student attendance</h2>
-            <Table bordered hover>
+            <h2 className="pt-3 d-flex gap-2 align-items-center justify-content-center">
+                <span>Student attendance</span>
+                <Spinner
+                    hidden={!loading}
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                />
+            </h2>
+            <Table bordered hover responsive>
                 <thead>
                 <tr>
                     <th>Class Number</th>

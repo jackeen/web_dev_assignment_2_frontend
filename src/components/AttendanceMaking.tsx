@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Button, Form, Modal} from "react-bootstrap";
+import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
 import dataLoader from "../dataLoader.ts";
 import {CollegeDay, ResponseData} from "../model.ts";
 
@@ -95,7 +95,22 @@ const AttendanceMaking: React.FC<AttendanceMakingProp> = (props) => {
             </Modal.Body>
             <Modal.Footer>
                 <div className="d-flex justify-content-end gap-2">
-                    <Button onClick={confirmTask} disabled={isLoading} variant="primary">Save</Button>
+                    <Button
+                        onClick={confirmTask}
+                        disabled={isLoading}
+                        variant="primary"
+                        className="d-flex gap-2 align-items-center justify-content-center"
+                    >
+                        <Spinner
+                            hidden={!isLoading}
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                        <span>Save</span>
+                    </Button>
                     <Button onClick={cancelTask} variant="secondary">Cancel</Button>
                 </div>
             </Modal.Footer>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Button, Col, Form, Modal, Row} from "react-bootstrap";
+import {Alert, Button, Col, Form, Modal, Row, Spinner} from "react-bootstrap";
 import {Class, Student} from "../model.ts";
 import {API_HOST} from "../../configure.ts";
 
@@ -136,8 +136,23 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
                     </Form.Group>
 
                     <div className="d-flex justify-content-end gap-2">
-                        <Button disabled={isLoading} type={"submit"} variant="primary">Save</Button>
-                        <Button onClick={cancelTask} variant="secondary">Cancel</Button>
+                        <Button
+                            disabled={isLoading}
+                            type={"submit"}
+                            variant="primary"
+                            className="d-flex gap-2 align-items-center justify-content-center"
+                        >
+                            <Spinner
+                                hidden={!isLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                            <span>Save</span>
+                        </Button>
+                        <Button disabled={isLoading} onClick={cancelTask} variant="secondary">Cancel</Button>
                     </div>
 
                 </Form>

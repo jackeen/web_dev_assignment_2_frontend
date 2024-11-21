@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Card, Table} from "react-bootstrap";
+import {Button, Card, Spinner, Table} from "react-bootstrap";
 import dataLoader from "../dataLoader.ts";
 import {Attendance, Class, ResponseData, Student} from "../model.ts";
 import {Link} from "react-router-dom";
@@ -23,11 +23,12 @@ const LectureHome: React.FC = () => {
     const [semesterId, setSemesterId] = useState(0);
 
     const [isShown, setIsShown] = useState(false);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [listChanging, setListChanging] = useState(0);
 
 
     useEffect(() => {
+        setIsLoading(true);
         dataLoader.get('/api/classes/')
             .then((data) => {
                 const res = data.data as ResponseData<Class[]>;
@@ -68,6 +69,7 @@ const LectureHome: React.FC = () => {
                                     });
                                     setAttendanceData(attendanceMap);
                                     setClassList(res.data);
+                                    setIsLoading(false);
                                 }
                             });
                     }
@@ -117,7 +119,18 @@ const LectureHome: React.FC = () => {
                 closeModal={closeModal}
                 updated={listUpdated}
             />
-            <h3 className="pt-3">Lectures' classes</h3>
+            <h3 className="pt-3 d-flex gap-2 align-items-center justify-content-center">
+                <span>Lectures' classes</span>
+                <Spinner
+                    hidden={!isLoading}
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                />
+            </h3>
+
             {classList.length == 0 ? <p>This is no class.</p> : ''}
             {classList.map((cls, index) => {
                 return (
@@ -131,7 +144,7 @@ const LectureHome: React.FC = () => {
                                     <span>{cls.semester.year} {cls.semester.semester}</span>
                                 </Card.Text>
 
-                                <Table bordered hover>
+                                <Table responsive bordered hover>
                                     <thead>
                                     <tr>
                                         <th>#</th>

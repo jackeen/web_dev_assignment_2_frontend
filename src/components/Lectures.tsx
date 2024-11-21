@@ -112,8 +112,8 @@ const Lectures: React.FC = () => {
                                     <td>{lecture.date_of_birth}</td>
                                     <td>{lecture.user.email}</td>
                                     <td className="d-flex gap-2 justify-content-end">
-                                        <Button onClick={() => {startEditForm(lecture.id)}}>Edit</Button>
-                                        <Button onClick={() => {deleteLecture(lecture.id)}} variant={"danger"}>Delete</Button>
+                                        <Button size="sm" onClick={() => {startEditForm(lecture.id)}}>Edit</Button>
+                                        <Button size="sm" onClick={() => {deleteLecture(lecture.id)}} variant={"danger"}>Delete</Button>
                                     </td>
                                 </tr>
                             )
