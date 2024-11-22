@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal, Spinner} from "react-bootstrap";
-import {Semester} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {ResponseData, Semester} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface SemesterFormProps {
@@ -41,52 +41,36 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
         }
     }, [isShown]);
 
-    function postSemester(callback: () => void) {
-        fetch(`${API_HOST}/api/semesters/`, {
-            method: 'POST',
-            body: JSON.stringify({
-                "year": year,
-                "semester": semester,
-                "start_date": startDate,
-                "end_date": endDate,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+    function postSemester(ok: () => void, fail: () => void) {
+        dataLoader.post(`/api/semesters/`, {
+            "year": year,
+            "semester": semester,
+            "start_date": startDate,
+            "end_date": endDate,
+        }).then((d) => {
+            const res = d.data as ResponseData<Semester>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
             }
         });
     }
-    function updateSemester(callback: () => void) {
+    function updateSemester(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/semesters/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "year": year,
-                "semester": semester,
-                "start_date": startDate,
-                "end_date": endDate,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        dataLoader.patch(`/api/semesters/${currentData.id}/`, {
+            "year": year,
+            "semester": semester,
+            "start_date": startDate,
+            "end_date": endDate,
+        }).then((d) => {
+            const res = d.data as ResponseData<Semester>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
             }
         });
     }
@@ -101,6 +85,8 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         } else {
             postSemester(() => {
@@ -108,6 +94,8 @@ const SemesterForm: React.FC<SemesterFormProps> = (({isShown,closeModal, current
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         }
     }

@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Spinner, Table} from "react-bootstrap";
 
-import {Semester} from "../model.ts";
+import {ResponseData, Semester} from "../model.ts";
 import SemesterForm from "./SemesterForm.tsx";
-import {API_HOST} from "../../configure.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 const Semesters: React.FC = () => {
@@ -19,22 +19,14 @@ const Semesters: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/semesters/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            setLoading(false);
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Semester[];
-                setSemesterList(data);
+        dataLoader.get('/api/semesters/').then((d) => {
+            const res = d.data as ResponseData<Semester[]>;
+            if (res.success) {
+                setSemesterList(res.data);
             } else {
-
+                alert(res.error.join());
             }
+            setLoading(false);
         });
     }, [listChanging]);
 
@@ -59,19 +51,13 @@ const Semesters: React.FC = () => {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/semesters/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage.getItem('token')}`,
-                }
-            }).then((res) => {
-                setLoading(false);
-                if (res.status === 204) {
-                    listUpdated()
+            dataLoader.delete(`/api/semesters/${id}/`).then((d) => {
+                if (d.status === 204) {
+                    listUpdated();
                 } else {
-                    alert(res.statusText)
+                    alert(d.statusText);
                 }
+                setLoading(false);
             });
         }
     }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal} from "react-bootstrap";
-import {Student} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {ResponseData, Student} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface StudentFormProps {
@@ -47,59 +47,45 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
         }
     }, [isShown]);
 
-    function postStudent(callback: () => void) {
-        fetch(`${API_HOST}/api/students/`, {
-            method: 'POST',
-            body: JSON.stringify({
-                "student_id": studentId,
-                "date_of_birth": birthDay,
-                "user": {
-                    "username": userName,
-                    "email": email,
-                    "first_name": firstName,
-                    "last_name": lastName
-                }
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+    function postStudent(ok: () => void, fail: () => void) {
+        dataLoader.post('/api/students/', {
+            "student_id": studentId,
+            "date_of_birth": birthDay,
+            "user": {
+                "username": userName,
+                "email": email,
+                "first_name": firstName,
+                "last_name": lastName
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        }).then((d) => {
+            const res = d.data as ResponseData<Student>;
+            if (res.success) {
+                ok();
             } else {
-
+                alert(res.error.join());
+                fail();
             }
         });
     }
-    function updateStudent(callback: () => void) {
+    function updateStudent(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/students/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "student_id": studentId,
-                "date_of_birth": birthDay,
-                "user": {
-                    "email": email,
-                    "first_name": firstName,
-                    "last_name": lastName
-                }
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+        dataLoader.patch(`/api/students/${currentData.id}/`, {
+            "student_id": studentId,
+            "date_of_birth": birthDay,
+            "user": {
+                "email": email,
+                "first_name": firstName,
+                "last_name": lastName
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        }).then((d) => {
+            const res = d.data as ResponseData<Student>;
+            if (res.success) {
+                ok();
             } else {
-
+                alert(res.error.join());
+                fail();
             }
         });
     }
@@ -114,6 +100,8 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         } else {
             postStudent(() => {
@@ -121,6 +109,8 @@ const StudentForm: React.FC<StudentFormProps> = (({isShown,closeModal, currentDa
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         }
     }

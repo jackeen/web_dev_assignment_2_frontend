@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Spinner, Table} from "react-bootstrap";
 
-import {Lecture} from "../model.ts";
+import {Lecture, ResponseData} from "../model.ts";
 import LectureForm from "./LectureForm.tsx";
-import {API_HOST} from "../../configure.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 const Lectures: React.FC = () => {
@@ -19,22 +19,14 @@ const Lectures: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/lectures/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            setLoading(false);
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Lecture[];
-                setLectureList(data);
+        dataLoader.get('/api/lectures/').then((d) => {
+            const res = d.data as ResponseData<Lecture[]>;
+            if (res.success) {
+                setLectureList(res.data);
             } else {
-
+                alert(res.error.join())
             }
+            setLoading(false);
         });
     }, [listChanging]);
 
@@ -59,19 +51,14 @@ const Lectures: React.FC = () => {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/lectures/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage.getItem('token')}`,
-                }
-            }).then((res) => {
-                setLoading(false);
-                if (res.status === 204) {
+            dataLoader.delete(`/api/lectures/${id}/`).then((d) => {
+                if (d.status === 204) {
                     listUpdated()
-                } else {
-                    alert(res.statusText)
                 }
+                setLoading(false);
+            }).catch((err) => {
+                alert(err);
+                setLoading(false);
             });
         }
     }

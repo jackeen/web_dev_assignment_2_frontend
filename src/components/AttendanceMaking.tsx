@@ -18,17 +18,20 @@ const AttendanceMaking: React.FC<AttendanceMakingProp> = (props) => {
 
     const [collegeDayId, setCollegeDayId] = useState(0);
     const [collegeDayList, setCollegeDayList] = useState<CollegeDay[]>([]);
+    const [collegeDayLoading, setCollegeDayLoading] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
+        setCollegeDayLoading(true);
         dataLoader.get(`/api/college_days/?semester_id=${props.semesterId}`)
             .then((data) => {
                 const res = data.data as ResponseData<CollegeDay[]>;
                 if (res.success) {
                     setCollegeDayList(res.data);
                 }
+                setCollegeDayLoading(false);
             });
     }, [props.isShown]);
 
@@ -81,6 +84,17 @@ const AttendanceMaking: React.FC<AttendanceMakingProp> = (props) => {
             <Modal.Body>
                 <Alert variant="danger" hidden={error === ""}>{error}</Alert>
                 <Form onSubmit={confirmTask}>
+                    <Form.Label className="d-flex gap-2 align-items-center">
+                        <span>College days</span>
+                        <Spinner
+                            hidden={!collegeDayLoading}
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                    </Form.Label>
                     <Form.Select size="lg" onInput={(e) => {
                         collegeDayChanged(e);
                     }} value={collegeDayId}>

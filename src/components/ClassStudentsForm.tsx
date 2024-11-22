@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Col, Form, Modal, Row, Spinner} from "react-bootstrap";
-import {Class, Student} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {Class, ResponseData, Student} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface ClassLectureFormProps {
@@ -15,6 +15,7 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
 
     const [students, setStudents] = useState<number[]>([]);
     const [studentList, setStudentList] = useState<Student[]>([]);
+    const [studentLoading, setStudentLoading] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -34,19 +35,13 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
 
     // load options
     useEffect(() => {
-        fetch(`${API_HOST}/api/students/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+        setStudentLoading(true);
+        dataLoader.get('/api/students/').then((d) => {
+            const res = d.data as ResponseData<Student[]>;
+            if (res.success) {
+                setStudentList(res.data);
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Student[];
-                setStudentList(data);
-            }
+            setStudentLoading(false);
         });
     }, [])
 
@@ -62,26 +57,19 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
         setStudents([...studentSet])
     }
 
-    function updateClass(callback: () => void) {
+    function updateClass(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/classes/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "student_ids": students,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        dataLoader.patch(`/api/classes/${currentData.id}/`, {
+            "student_ids": students,
+        }).then((d) => {
+            const res = d.data as ResponseData<Class>;
+            if (res.success) {
+                ok();
             } else {
-                setError(json.error);
+                setError(res.error.join());
+                fail();
             }
         });
     }
@@ -95,6 +83,8 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
             form.reset();
             updated();
             closeModal();
+        }, () => {
+            setIsLoading(false);
         });
     }
     function cancelTask() {
@@ -115,7 +105,18 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
             <Modal.Body>
                 <Alert hidden={error === ''} variant={'danger'}>{error}</Alert>
                 <Form className="form" onSubmit={confirmTask}>
-                    <Form.Group controlId="students" className="mb-3">
+                    <h6 className="d-flex gap-2 align-items-center">
+                        <span>Student list</span>
+                        <Spinner
+                            hidden={!studentLoading}
+                            as="span"
+                            animation="border"
+                            size="sm"
+                            role="status"
+                            aria-hidden="true"
+                        />
+                    </h6>
+                    <Form.Group controlId="students" className="mb-3 over-flow-auto">
                         {studentList.map((student: Student, index) => {
                             return (
                                 <Row key={student.id}>

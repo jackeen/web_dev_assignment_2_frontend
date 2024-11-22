@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal, Spinner} from "react-bootstrap";
-import {Course} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {Course, ResponseData} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface CourseFormProps {
@@ -35,48 +35,32 @@ const CourseForm: React.FC<CourseFormProps> = (({isShown,closeModal, currentData
         }
     }, [isShown]);
 
-    function postCourse(callback: () => void) {
-        fetch(`${API_HOST}/api/courses/`, {
-            method: 'POST',
-            body: JSON.stringify({
-                "code": code,
-                "name": name,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+    function postCourse(ok: () => void, fail: () => void) {
+        dataLoader.post(`/api/courses/`, {
+            "code": code,
+            "name": name,
+        }).then((d) => {
+            const res = d.data as ResponseData<Course>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
             }
         });
     }
-    function updateCourse(callback: () => void) {
+    function updateCourse(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/courses/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "code": code,
-                "name": name,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        dataLoader.patch(`/api/courses/${currentData.id}/`, {
+            "code": code,
+            "name": name,
+        }).then((d) => {
+            const res = d.data as ResponseData<Course>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
             }
         });
     }
@@ -91,6 +75,8 @@ const CourseForm: React.FC<CourseFormProps> = (({isShown,closeModal, currentData
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         } else {
             postCourse(() => {
@@ -98,6 +84,8 @@ const CourseForm: React.FC<CourseFormProps> = (({isShown,closeModal, currentData
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         }
     }

@@ -3,11 +3,10 @@ import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Spinner, Table} from "react-bootstrap";
 
 import {Class, ResponseData} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
 import ClassForm from "./ClassForm.tsx";
 import ClassLectureForm from "./ClassLectureForm.tsx";
 import ClassStudentsForm from "./ClassStudentsForm.tsx";
-import axios from "axios";
+import dataLoader from "../dataLoader.ts";
 
 
 const Classes: React.FC = () => {
@@ -25,19 +24,15 @@ const Classes: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.get(`${API_HOST}/api/classes/`, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            const studentsRes = res.data as ResponseData<Class[]>;
-            if (studentsRes.success) {
-                setClassList(studentsRes.data);
+        dataLoader.get('/api/classes/').then((d) => {
+            const res = d.data as ResponseData<Class[]>;
+            if (res.success) {
+                setClassList(res.data);
             }
             setLoading(false);
         }).catch((err) => {
-            alert(err.toString());
+            alert(err);
+            setLoading(false);
         });
     }, [listChanging]);
 
@@ -75,18 +70,14 @@ const Classes: React.FC = () => {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/classes/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            }).then((res) => {
-                setLoading(false);
-                if (res.status === 204) {
+            dataLoader.delete(`/api/classes/${id}/`).then((d) => {
+                if (d.status === 204) {
                     listUpdated()
-                } else {
-                    alert(res.statusText)
                 }
+                setLoading(false);
+            }).catch((err) => {
+                alert(err);
+                setLoading(false);
             });
         }
     }

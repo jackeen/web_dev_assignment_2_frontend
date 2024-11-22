@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Spinner, Table} from "react-bootstrap";
 
-import {Student} from "../model.ts";
+import {ResponseData, Student} from "../model.ts";
 import StudentForm from "./StudentForm.tsx";
-import {API_HOST} from "../../configure.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 const Students: React.FC = () => {
@@ -19,22 +19,14 @@ const Students: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/students/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            setLoading(false);
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Student[];
-                setStudentList(data);
+        dataLoader.get('/api/students/').then((d) => {
+            const res = d.data as ResponseData<Student[]>;
+            if (res.success) {
+                setStudentList(res.data);
             } else {
-
+                alert(res.error.join());
             }
+            setLoading(false);
         });
     }, [listChanging]);
 
@@ -59,19 +51,14 @@ const Students: React.FC = () => {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/students/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage.getItem('token')}`,
-                }
-            }).then((res) => {
-                setLoading(false);
-                if (res.status === 204) {
+            dataLoader.delete(`/api/students/${id}/`).then((d) => {
+                if (d.status === 204) {
                     listUpdated()
-                } else {
-                    alert(res.statusText)
                 }
+                setLoading(false);
+            }).catch((err) => {
+                alert(err);
+                setLoading(false);
             });
         }
     }

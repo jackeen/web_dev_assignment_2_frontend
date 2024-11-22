@@ -131,7 +131,7 @@ const LectureHome: React.FC = () => {
                 />
             </h3>
 
-            {classList.length == 0 ? <p>This is no class.</p> : ''}
+            {classList.length == 0 ? <p className="text-center">This is no class.</p> : ''}
             {classList.map((cls, index) => {
                 return (
                     <div key={cls.id}>

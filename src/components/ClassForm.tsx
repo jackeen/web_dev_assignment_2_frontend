@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
-import {Class, Course, Semester} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {Class, Course, ResponseData, Semester} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface ClassFormProps {
@@ -19,6 +19,8 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
 
     const [courseList, setCourseList] = useState<Course[]>([]);
     const [semesterList, setSemesterList] = useState<Semester[]>([]);
+    const [courseLoading, setCourseLoading] = useState(false);
+    const [semesterLoading, setSemesterLoading] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -46,80 +48,55 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
 
     // load options
     useEffect(() => {
-        fetch(`${API_HOST}/api/courses/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+        setCourseLoading(true);
+        dataLoader.get('/api/courses/').then((d) => {
+            const res = d.data as ResponseData<Course[]>;
+            if (res.success) {
+                setCourseList(res.data);
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Course[];
-                setCourseList(data);
-            }
+            setCourseLoading(false);
         });
-        fetch(`${API_HOST}/api/semesters/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+
+        setSemesterLoading(true);
+        dataLoader.get('/api/semesters/').then((d) => {
+            const res = d.data as ResponseData<Semester[]>;
+            if (res.success) {
+                setSemesterList(res.data);
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Semester[];
-                setSemesterList(data);
-            }
+            setSemesterLoading(false);
         });
     }, [])
 
-    function postClass(callback: () => void) {
-        fetch(`${API_HOST}/api/classes/`, {
-            method: 'POST',
-            body: JSON.stringify({
-                "number": number,
-                "semester_id": semester,
-                "course_id": course,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+    function postClass(ok: () => void, fail: () => void) {
+        dataLoader.post('/api/classes/', {
+            "number": number,
+            "semester_id": semester,
+            "course_id": course,
+        }).then((d) => {
+            const res = d.data as ResponseData<Class>;
+            if (res.success) {
+                ok();
             } else {
-
+                alert(res.error.join());
+                fail();
             }
         });
     }
-    function updateClass(callback: () => void) {
+    function updateClass(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/classes/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "number": number,
-                "semester_id": semester,
-                "course_id": course,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        dataLoader.patch(`/api/classes/${currentData.id}/`, {
+            "number": number,
+            "semester_id": semester,
+            "course_id": course,
+        }).then((d) => {
+            const res = d.data as ResponseData<Class>;
+            if (res.success) {
+                ok();
             } else {
-
+                alert(res.error.join());
+                fail();
             }
         });
     }
@@ -149,6 +126,8 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         } else {
             postClass(() => {
@@ -156,6 +135,8 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         }
     }
@@ -189,7 +170,17 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
                     </Form.Group>
 
                     <Form.Group controlId="semester" className="mb-3">
-                        <Form.Label>Semester</Form.Label>
+                        <Form.Label className="d-flex gap-2 align-items-center">
+                            <span>Semester</span>
+                            <Spinner
+                                hidden={!semesterLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                        </Form.Label>
                         <Form.Select
                             value={semester}
                             onChange={(e) => setSemester(Number(e.target.value))}
@@ -205,7 +196,17 @@ const ClassForm: React.FC<ClassFormProps> = (({isShown,closeModal, currentData, 
                     </Form.Group>
 
                     <Form.Group controlId="course" className="mb-3">
-                        <Form.Label>Course</Form.Label>
+                        <Form.Label className="d-flex gap-2 align-items-center">
+                            <span>Course</span>
+                            <Spinner
+                                hidden={!courseLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                        </Form.Label>
                         <Form.Select
                             value={course}
                             onChange={(e) => setCourse(Number(e.target.value))}

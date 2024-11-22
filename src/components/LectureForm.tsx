@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Form, Modal, Spinner} from "react-bootstrap";
-import {Lecture} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {Lecture, ResponseData} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface LectureFormProps {
@@ -47,59 +47,45 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
         }
     }, [isShown]);
 
-    function postLecture(callback: () => void) {
-        fetch(`${API_HOST}/api/lectures/`, {
-            method: 'POST',
-            body: JSON.stringify({
-                "staff_id": staffId,
-                "date_of_birth": birthDay,
-                "user": {
-                    "username": userName,
-                    "email": email,
-                    "first_name": firstName,
-                    "last_name": lastName
-                }
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+    function postLecture(ok: () => void, fail: () => void) {
+        dataLoader.post('/api/lectures/', {
+            "staff_id": staffId,
+            "date_of_birth": birthDay,
+            "user": {
+                "username": userName,
+                "email": email,
+                "first_name": firstName,
+                "last_name": lastName
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        }).then((d) => {
+            const res = d.data as ResponseData<Lecture>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
+                alert(res.error.join());
             }
         });
     }
-    function updateLecture(callback: () => void) {
+    function updateLecture(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/lectures/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "staff_id": staffId,
-                "date_of_birth": birthDay,
-                "user": {
-                    "email": email,
-                    "first_name": firstName,
-                    "last_name": lastName
-                }
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+        dataLoader.patch(`/api/lectures/${currentData.id}/`, {
+            "staff_id": staffId,
+            "date_of_birth": birthDay,
+            "user": {
+                "email": email,
+                "first_name": firstName,
+                "last_name": lastName
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        }).then((d) => {
+            const res = d.data as ResponseData<Lecture>;
+            if (res.success) {
+                ok();
             } else {
-
+                fail();
+                alert(res.error.join());
             }
         });
     }
@@ -114,6 +100,8 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         } else {
             postLecture(() => {
@@ -121,6 +109,8 @@ const LectureForm: React.FC<LectureFormProps> = (({isShown,closeModal, currentDa
                 form.reset();
                 updated();
                 closeModal();
+            }, () => {
+                setIsLoading(false);
             });
         }
     }

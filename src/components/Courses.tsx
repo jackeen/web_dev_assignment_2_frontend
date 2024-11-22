@@ -2,15 +2,15 @@ import React, {useEffect, useState} from "react";
 import DashBoardLayout from "./DashBoardLayout.tsx";
 import {Button, Card, Spinner, Table} from "react-bootstrap";
 
-import {Course} from "../model.ts";
+import {Course, ResponseData} from "../model.ts";
 import CourseForm from "./CourseForm.tsx";
-import {API_HOST} from "../../configure.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 const Courses: React.FC = () => {
     const [showForm, setShowForm] = useState(false);
 
-    const [courseList, setStudentList] = useState<Course[]>([]);
+    const [courseList, setCourseList] = useState<Course[]>([]);
     const [loading, setLoading] = useState(false);
 
     // for edit form, which cannot use the common variable, must state
@@ -19,22 +19,14 @@ const Courses: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        fetch(`${API_HOST}/api/courses/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            setLoading(false);
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Course[];
-                setStudentList(data);
+        dataLoader.get('/api/courses/').then((d) => {
+            const res = d.data as ResponseData<Course[]>;
+            if (res.success) {
+                setCourseList(res.data);
             } else {
-
+                alert(res.error.join());
             }
+            setLoading(false);
         });
     }, [listChanging]);
 
@@ -59,18 +51,12 @@ const Courses: React.FC = () => {
                 return;
             }
             setLoading(true);
-            fetch(`${API_HOST}/api/courses/${id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage.getItem('token')}`,
-                }
-            }).then((res) => {
+            dataLoader.delete(`/api/courses/${id}/`).then((d) => {
                 setLoading(false);
-                if (res.status === 204) {
+                if (d.status === 204) {
                     listUpdated()
                 } else {
-                    alert(res.statusText)
+                    alert(d.statusText);
                 }
             });
         }

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Form, Modal, Spinner} from "react-bootstrap";
-import {Class, Lecture} from "../model.ts";
-import {API_HOST} from "../../configure.ts";
+import {Class, Lecture, ResponseData} from "../model.ts";
+import dataLoader from "../dataLoader.ts";
 
 
 interface ClassLectureFormProps {
@@ -15,6 +15,7 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
 
     const [lecture, setLecture] = useState(0);
     const [lectureList, setLectureList] = useState<Lecture[]>([]);
+    const [lectureLoading, setLectureLoading] = useState(false);
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -25,42 +26,29 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
 
     // load options
     useEffect(() => {
-        fetch(`${API_HOST}/api/lectures/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
+        setLectureLoading(true);
+        dataLoader.get('/api/lectures/').then((d) => {
+            const res = d.data as ResponseData<Lecture[]>;
+            if (res.success) {
+                setLectureList(res.data);
             }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                let data = json.data as Lecture[];
-                setLectureList(data);
-            }
+            setLectureLoading(false);
         });
     }, [])
 
-    function updateClass(callback: () => void) {
+    function updateClass(ok: () => void, fail: () => void) {
         if (!currentData) {
             return;
         }
-        fetch(`${API_HOST}/api/classes/${currentData.id}/`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                "lecture_id": lecture,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Token ${localStorage.getItem('token')}`,
-            }
-        }).then((res) => {
-            return res.json();
-        }).then((json) => {
-            if (json.success) {
-                callback();
+        dataLoader.patch(`/api/classes/${currentData.id}/`, {
+            "lecture_id": lecture,
+        }).then((d) => {
+            const res = d.data as ResponseData<Class>;
+            if (res.success) {
+                ok();
             } else {
-                setError(json.error);
+                setError(res.error.join());
+                fail();
             }
         });
     }
@@ -74,6 +62,8 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
             form.reset();
             updated();
             closeModal();
+        }, () => {
+            setIsLoading(false);
         });
     }
     function cancelTask() {
@@ -95,7 +85,17 @@ const ClassLectureForm: React.FC<ClassLectureFormProps> = (({isShown,closeModal,
                 <Alert hidden={error === ''} variant={'danger'}>{error}</Alert>
                 <Form className="form" onSubmit={confirmTask}>
                     <Form.Group controlId="lecture" className="mb-3">
-                        <Form.Label>Lecture</Form.Label>
+                        <Form.Label className="d-flex gap-2 align-items-center">
+                            <span>Lecture</span>
+                            <Spinner
+                                hidden={!lectureLoading}
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                role="status"
+                                aria-hidden="true"
+                            />
+                        </Form.Label>
                         <Form.Select
                             value={lecture}
                             onChange={(e) => setLecture(Number(e.target.value))}
