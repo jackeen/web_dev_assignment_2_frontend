@@ -63,14 +63,15 @@ const Login: React.FC = () => {
                 let error_text = data.error.join('\n');
                 setError(error_text);
             }
+            setLoading(false);
         }
     }
 
     return (
         <div className="d-flex flex-column align-items-center justify-content-center vw-100 vh-100 login-bg">
-            <Card className="w-50 p-5 shadow">
-                <h1 className="text-center mb-5">Login</h1>
-                <Alert hidden={error==""} variant={"danger"}>{error}</Alert>
+            <h1 className="login-title">Attendance</h1>
+            <Card className="login-card p-5 shadow-sm border-0">
+                <Alert hidden={error == ""} variant={"danger"}>{error}</Alert>
                 <Form onSubmit={handleLogin}>
                     <Form.Group controlId="username" className="mb-3">
                         <Form.Label>Username</Form.Label>
@@ -94,7 +95,7 @@ const Login: React.FC = () => {
                             size="lg"
                         />
                     </Form.Group>
-                    <div className="d-flex justify-content-center">
+                    <div className="d-flex justify-content-center pt-2">
                         <Button variant="primary" size="lg" type="submit"
                                 className="w-100 d-flex gap-2 align-items-center justify-content-center"
                                 disabled={loading}
