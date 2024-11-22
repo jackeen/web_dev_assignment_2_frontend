@@ -51,20 +51,19 @@ const Login: React.FC = () => {
                 localStorage.setItem('user', JSON.stringify(user));
                 setTimeout(() => {
                     window.location.href = `${ROUTES.HOME}`;
+                    setLoading(false);
                 }, 200);
             }).catch((err) => {
                 alert(err.toString());
+                setLoading(false);
             })
 
         } else {
             if (data.error.length > 0) {
                 let error_text = data.error.join('\n');
-                // @ts-ignore
                 setError(error_text);
             }
         }
-
-        setLoading(false);
     }
 
     return (
@@ -81,6 +80,7 @@ const Login: React.FC = () => {
                             placeholder="Enter username"
                             onChange={(e) => setUsername(e.target.value)}
                             required={true}
+                            size="lg"
                         />
                     </Form.Group>
                     <Form.Group controlId="password" className="mb-3">
@@ -91,10 +91,11 @@ const Login: React.FC = () => {
                             placeholder="Enter password"
                             onChange={(e) => setPassword(e.target.value)}
                             required={true}
+                            size="lg"
                         />
                     </Form.Group>
                     <div className="d-flex justify-content-center">
-                        <Button variant="primary" type="submit"
+                        <Button variant="primary" size="lg" type="submit"
                                 className="w-100 d-flex gap-2 align-items-center justify-content-center"
                                 disabled={loading}
                         >
@@ -111,8 +112,9 @@ const Login: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-            <div className="pt-5 login-copyright">
-                <p>Attendance system for WebDev Assignment 2</p>
+            <div className="pt-5 login-copyright text-center">
+                <div>Attendance system for WebDev Assignment 2</div>
+                <div>© 2024 Attendance by Jack</div>
             </div>
         </div>
     )
