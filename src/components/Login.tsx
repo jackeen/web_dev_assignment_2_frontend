@@ -68,8 +68,8 @@ const Login: React.FC = () => {
     }
 
     return (
-        <div className="d-flex align-items-center justify-content-center vw-100 vh-100">
-            <Card className="flex-column w-50 p-5 shadow">
+        <div className="d-flex flex-column align-items-center justify-content-center vw-100 vh-100 login-bg">
+            <Card className="w-50 p-5 shadow">
                 <h1 className="text-center mb-5">Login</h1>
                 <Alert hidden={error==""} variant={"danger"}>{error}</Alert>
                 <Form onSubmit={handleLogin}>
@@ -111,6 +111,9 @@ const Login: React.FC = () => {
                     </div>
                 </Form>
             </Card>
+            <div className="pt-5 login-copyright">
+                <p>Attendance system for WebDev Assignment 2</p>
+            </div>
         </div>
     )
 }

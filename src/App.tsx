@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Routes, Route, BrowserRouter} from "react-router-dom";
 import Login from "./components/Login.tsx";
 
@@ -22,11 +22,47 @@ interface AppProps {
 }
 
 const App: React.FC<AppProps> = (_) => {
+
+    // theme change
+    const [theme, setTheme] = useState('dark');
+
+    function updateTheme(preferDarkMode: boolean) {
+        const theme = preferDarkMode ? 'dark' : 'light';
+        setTheme(theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
+    }
+
+    function onThemeChange(e: MediaQueryListEvent) {
+        updateTheme(e.matches);
+    }
+
+    useEffect(() => {
+        console.log(theme);
+
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        updateTheme(mediaQuery.matches);
+        mediaQuery.addEventListener('change', onThemeChange);
+
+        // for unmounted component to clean the event
+        return () => {
+            mediaQuery.removeEventListener('change', onThemeChange);
+        }
+
+    }, []);
+
+    // function toggleTheme() {
+    //     if (theme === 'dark') {
+    //         updateTheme(false);
+    //     } else {
+    //         updateTheme(true);
+    //     }
+    // }
+
     return (
         <AuthProvider>
         <BrowserRouter>
             <Routes>
-                <Route path={ROUTES.LOGIN} element={<Login/>} />
+                <Route path={ROUTES.LOGIN} element={<Login />} />
                 <Route path={ROUTES.NOT_FOUND} element={<NotFound/>} />
                 <Route path={ROUTES.NOT_AUTHORIZED} element={<NotAuthorized/>} />
 
