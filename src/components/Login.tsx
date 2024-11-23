@@ -68,7 +68,7 @@ const Login: React.FC = () => {
     }
 
     return (
-        <div className="d-flex flex-column align-items-center justify-content-center vw-100 vh-100 login-bg">
+        <div className="login d-flex flex-column align-items-center justify-content-center vw-100 vh-100 login-bg">
             {/*<h1 className="login-title">Attendance</h1>*/}
             <h1 className="login-title">
                 <i>A</i>

@@ -80,12 +80,16 @@
         animation: flicker 2s ease-in-out infinite alternate;
     }
 
+    .login {
+        perspective-origin: center;
+        perspective: 10rem;
+    }
     .login-card {
         transition: all 0.2s ease-in;
     }
     .login-card:hover {
-        transform: rotateX(1deg);
-        box-shadow: 0 1rem 3rem 1rem rgba(0, 0, 0, .2) !important;
+        transform: rotateX(1deg) rotateY(1deg);
+        box-shadow: -1rem 1rem 3rem 1rem rgba(0, 0, 0, .2) !important;
     }
 
     .login-copyright {
