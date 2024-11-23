@@ -69,11 +69,14 @@
     .login-title {
         margin-bottom: 4rem;
         color: #d9fdff;
-        text-shadow: 0 0 2rem #00f0ff;
+        text-shadow: 0 0 2rem rgba(223, 255, 226, 0.89);
     }
     .login-title > i {
         text-transform: capitalize;
         font-style: normal;
+        font-family: serif;
+        -webkit-text-stroke: 2px #54ff4f;
+        color: transparent;
     }
     .login-title > i:nth-child(8) {
         transform: translate(-0.2rem, 1rem) rotate(10deg);
@@ -98,6 +101,11 @@
     .login-bg {
         background-color: #473e1b;
         background-image: linear-gradient(132deg, #3c471b 0%, #07392f 100%);
+    }
+
+    /*override the bootstrap default dark color*/
+    .dark-nav {
+        background: #2b3035;
     }
 }
 

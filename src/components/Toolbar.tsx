@@ -18,7 +18,7 @@ const Toolbar: React.FC = () => {
     }
 
     return (
-        <Navbar expand="lg" className="shadow-sm mb-3">
+        <Navbar expand="lg" className="shadow-sm mb-3 dark-nav">
             <Container fluid className="d-flex">
                 <Navbar.Brand href={ROUTES.HOME}>Attendance System</Navbar.Brand>
                 <Button
